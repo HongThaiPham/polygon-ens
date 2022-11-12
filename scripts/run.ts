@@ -1,6 +1,7 @@
 import * as hre from "hardhat";
 
 const main = async () => {
+  // The first return is the deployer, the second is a random account
   const [owner, randomPerson] = await hre.ethers.getSigners();
   const domainContractFactory = await hre.ethers.getContractFactory("Domains");
   const domainContract = await domainContractFactory.deploy();
@@ -8,11 +9,17 @@ const main = async () => {
   console.log("Contract deployed to:", domainContract.address);
   console.log("Contract deployed by:", owner.address);
 
-  const txn = await domainContract.register("doom");
+  let txn = await domainContract.register("doom");
   await txn.wait();
 
-  const domainOwner = await domainContract.getAddress("doom");
-  console.log("Owner of domain:", domainOwner);
+  const domainAddress = await domainContract.getAddress("doom");
+  console.log("Owner of domain doom:", domainAddress);
+
+  // Trying to set a record that doesn't belong to me!
+  //   txn = await domainContract
+  //     .connect(randomPerson)
+  //     .setRecord("doom", "Haha my domain now!");
+  //   await txn.wait();
 };
 
 const runMain = async () => {
